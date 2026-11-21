@@ -1,0 +1,406 @@
+
+
+Modul Praktikum Grafika Komputer --- Pertemuan 10Blender Materials, UV &amp; TexturingMata Kuliah: EF234504 --- Grafika KomputerPertemuan: 10Topik: Blender Materials, UV &amp; TexturingDosen: Dr. Darlis HerumurtiDepartemen: Teknik Informatika1. Deskripsi PraktikumPada Pertemuan 9 mahasiswa telah membuat geometry asset 3D. Pertemuan 10melanjutkan asset tersebut dari sisi surface appearance.Alur praktikum:3D Model
+↓
+Model Preparation
+↓
+Mark Seam
+↓
+UV Unwrap
+↓
+UV Island
+↓
+Checker Test
+↓
+Distortion &amp; Texel Density Review
+↓
+Pack UV
+↓
+Principled BSDF
+↓
+Base Color
+↓
+Roughness
+↓
+Metallic
+↓
+Normal Map
+↓
+Emission
+↓
+Final PBR MaterialTarget akhir adalah satu asset yang mempunyai UV layout yang layak danmaterial PBR yang siap digunakan pada tahap Lighting, Camera &amp;Rendering.2. Capaian PraktikumSetelah menyelesaikan praktikum, mahasiswa mampu:menjelaskan hubungan geometry, material, dan texture;menggunakan Material Properties dan Shader Editor;menggunakan Principled BSDF;menjelaskan fungsi UV Mapping;menentukan seam berdasarkan struktur object;melakukan Mark Seam;melakukan Unwrap;membaca UV layout pada UV Editor;menjelaskan UV Island;mengidentifikasi UV distortion;menggunakan checker texture untuk evaluasi UV;memperbaiki scale dan orientasi UV Island;mempertimbangkan texel density;melakukan packing UV dengan margin yang layak;menjelaskan overlapping UV;membedakan manual unwrap dan Smart UV Project;menggunakan Image Texture;menghubungkan Base Color Map;menghubungkan Roughness Map;menghubungkan Metallic Map;menghubungkan Normal Map melalui Normal Map node;menggunakan color space yang tepat untuk texture warna dan texturedata;membuat area Emission;menjelaskan fungsi Emission Map;mengintegrasikan beberapa texture map ke satu material PBR;melakukan final material review.3. Asset yang DigunakanGunakan asset hasil Pertemuan 9.Contoh:sci-fi crate;toolbox;control panel;robot head;lamp;mechanical prop.Disarankan menggunakan asset yang memiliki:beberapa bidang dengan orientasi berbeda;detail panel;bevel;beberapa bagian yang memerlukan seam;area metal/non-metal;area yang memungkinkan emission.Jika asset Pertemuan 9 belum layak, lakukan perbaikan geometrysecukupnya sebelum UV.4. Konsep: Geometry vs Surface AppearanceGeometry menentukan:Shape
+Silhouette
+VolumeMaterial dan texture menentukan:Color
+Surface Roughness
+Metal Character
+Small Surface Detail
+EmissionSecara konseptual:Geometry
++
+Material
++
+Texture
+=
+Visible SurfaceNormal Map dapat membuat detail shading, tetapi tidak menggantikangeometry yang diperlukan untuk silhouette.5. Persiapan FileBuka file .blend Pertemuan 9.Simpan sebagai file baru agar versi modeling tetap tersedia:P10_NRP_Nama.blendJangan langsung menimpa file Pertemuan 9.6. Backup Sebelum UVSebelum memulai:File
+→ Save AsPrinsip workflow:P09_Modeling.blend
+↓
+P10_UV_Material.blendIni memudahkan rollback jika terjadi kesalahan besar.7. Pemeriksaan ModelSebelum UV, periksa:object naming;duplicate geometry;normal;modifier;scale;topology;bagian yang memang perlu dipisah menjadi object berbeda.UV yang baik sulit dicapai jika geometry masih bermasalah.8. Apply ScalePilih object utama.Periksa transform.Jika scale bukan:1, 1, 1dan bentuk final sudah ditentukan, gunakan:Ctrl + A
+→ ScaleMengapa?Karena scale object yang tidak konsisten dapat memengaruhi beberapaoperasi dan menyulitkan evaluasi ukuran surface.9. Periksa NormalMasuk Edit Mode:Tab
+A
+Shift + NTujuan:memastikan orientasi normal face konsisten.Normal geometry berbeda dari Normal Map. Geometry normal menentukanarah permukaan asli; Normal Map memodifikasi arah shading secara visual.10. Workspace untuk UVBlender menyediakan workspace:UV EditingUmumnya workspace ini menampilkan:UV Editor
++
+3D ViewportHubungannya:Face pada 3D Viewport
+↔
+UV Face pada UV EditorSelection pada mesh dapat terlihat pada UV layout.11. Apa Itu UV Mapping?Texture image adalah 2D:U
+Vsedangkan model berada di 3D:X
+Y
+ZUV Mapping menentukan bagian image 2D mana yang digunakan oleh setiapface pada surface.12. UV SpaceUV space utama umumnya:U = 0 ... 1
+V = 0 ... 1Area ini dapat dibayangkan sebagai satu lembar texture.(0,1) ┌──────────┐ (1,1)
+      │          │
+      │ UV Space │
+      │          │
+(0,0) └──────────┘ (1,0)13. SeamSeam adalah edge yang ditandai sebagai lokasi potong saat mesh dibuka ke2D.Analogi:3D cardboard box
+↓
+cut selected edges
+↓
+open / flatten
+↓
+2D layoutSeam bukan geometry baru. Seam adalah informasi yang membantu prosesunwrap.14. Strategi SeamSeam yang baik biasanya:berada pada area kurang terlihat;mengikuti perubahan bentuk;memisahkan bagian yang secara logis berbeda;mengurangi stretching;menghasilkan island yang mudah dipahami.Tujuan bukan membuat seam sesedikit mungkin.Tujuan:reasonable number of seams
++
+low distortion
++
+manageable islands15. Latihan Seam pada CubeBuat cube latihan atau duplicate body asset.Masuk Edit Mode:Tab
+2Pilih beberapa edge yang akan menjadi garis potong.Gunakan:Ctrl + E
+→ Mark SeamEdge seam akan ditandai pada viewport sesuai tampilan Blender.16. Clear SeamJika seam salah:Select Edge
+Ctrl + E
+→ Clear SeamJangan takut mengubah seam. UV unwrap adalah proses iteratif:Mark
+↓
+Unwrap
+↓
+Inspect
+↓
+Revise Seam
+↓
+Unwrap Again17. Contoh Seam pada CylinderStrategi dasar:1 seam vertikal pada side
++
+seam pemisah top
++
+seam pemisah bottomHasil ideal secara konseptual:Side → strip island
+Top → circular island
+Bottom → circular islandLatihan ini membantu memahami bahwa seam menentukan cara surface dibuka.18. Menentukan Seam Asset UtamaPada hard-surface asset, identifikasi:Front
+Back
+Top
+Bottom
+Left
+Right
+Panel / detailTentukan seam pada:sisi belakang;sudut yang secara visual sudah menjadi batas;bagian bawah;pertemuan panel;area yang sulit diratakan jika tetap terhubung.19. UnwrapSetelah seam dibuat:Edit Mode
+A
+U
+→ UnwrapBlender membuat UV Island berdasarkan geometry dan seam.Buka UV Editor dan periksa hasil.20. Apa Itu UV Island?UV Island adalah kelompok face yang masih terhubung di UV space.Satu object dapat menghasilkan:1 island
+atau
+banyak islandsBanyak island bukan otomatis buruk. Yang penting adalah alasan pemisahandan kualitas layout.21. Memilih UV IslandDi UV Editor, selection dapat dipindah, diputar, dan di-scale.Transform dasar tetap mengikuti pola Blender:G
+→ Move
+
+R
+→ Rotate
+
+S
+→ ScaleGunakan transform UV untuk mengatur layout, bukan untuk mengubahgeometry 3D.22. Hubungan Scale UV dan Detail TextureSecara umum:UV Island lebih besar
+→ mendapat lebih banyak area texture
+→ potensi detail lebih tinggi
+
+UV Island lebih kecil
+→ area texture lebih sedikit
+→ detail lebih rendahInilah dasar pembahasan texel density.23. Checker TextureSebelum menggunakan texture final, evaluasi UV dengan pola checker.Tujuan checker:melihat stretching;melihat compression;membandingkan scale detail;memeriksa orientation.UV yang sehat cenderung menampilkan checker dengan bentuk dan ukuranrelatif konsisten.24. Membuat Material CheckerBuat material sementara:Material Properties
+→ NewBuka:Shader EditorPrincipled BSDF dan Material Output akan tersedia.Untuk checker procedural, tambahkan:Shift + A
+→ Texture
+→ Checker TextureHubungkan:Checker Texture — Color
+↓
+Principled BSDF — Base Color25. Menggunakan UV untuk CheckerTambahkan bila diperlukan:Texture CoordinateGunakan output:UVke input Vector Checker Texture.Alur:Texture Coordinate — UV
+↓
+Checker Texture
+↓
+Principled BSDF — Base Color
+↓
+Material OutputChecker procedural ini digunakan untuk evaluasi UV. Texture map finalnantinya dapat menggunakan Image Texture.26. Mendeteksi DistortionPerhatikan checker.Masalah:Square → Rectanglemenunjukkan stretching/compression.Contoh:checker memanjang horizontal
+→ UV/surface relation tidak proporsional
+
+checker sangat kecil pada satu area
+→ island mendapat texel density lebih tinggi27. Memperbaiki DistortionJika distortion besar:periksa seam;tambah atau pindahkan seam;lakukan Unwrap ulang;periksa bentuk island;scale/rotate island jika diperlukan;cek checker lagi.Jangan hanya memaksa island menjadi bentuk tertentu jika masalahsebenarnya berasal dari seam.28. Texel DensityTexel density secara konseptual menunjukkan:jumlah pixel texture
+per luas surfaceDalam praktikum ini tidak perlu menghitung secara matematis.Evaluasi visual menggunakan checker:checker relatif sama ukuran
+≈ texel density relatif konsisten29. Kapan Texel Density Boleh Berbeda?Tidak selalu semua surface harus identik.Area penting dapat diberi lebih banyak area UV, misalnya:front panel;logo area;control panel;face karakter;detail hero asset.Namun perbedaan harus disengaja, bukan karena layout tidak terkontrol.30. Pack UV IslandsSetelah island cukup baik:UV
+→ Pack IslandsTujuan:memanfaatkan UV space;menjaga margin;mengurangi ruang kosong yang tidak perlu.Setelah packing, inspeksi kembali ukuran island.31. Margin antar-IslandJangan membuat island saling menempel.Margin diperlukan untuk mengurangi risiko:texture bleedingterutama saat texture mengalami filtering atau digunakan pada resolusiberbeda.Prinsip:efficient packing
+≠
+zero margin32. Overlapping UVOverlap berarti dua atau lebih surface menggunakan area UV yang sama.Ini dapat berguna untuk:bagian identik;detail simetris;texture yang memang ingin dibagi.Namun jika menggunakan unique texture, overlap yang tidak disengajaharus dihindari.33. Manual Unwrap vs Smart UV ProjectManual:Mark Seam
+↓
+UnwrapKelebihan:kontrol tinggi;island lebih terencana.Smart UV:U
+→ Smart UV ProjectKelebihan:cepat.Kekurangan:island dapat sangat banyak;layout kurang terkontrol.Untuk asset utama, utamakan manual unwrap pada bagian penting. Smart UVboleh digunakan sebagai eksperimen/perbandingan.34. Eksperimen Smart UVDuplicate object atau simpan backup.Metode A:Manual Seam + UnwrapMetode B:Smart UV ProjectBandingkan:jumlah island;bentuk island;distortion;kemudahan memahami layout;packing.35. Material di BlenderMaterial menentukan bagaimana surface merespons cahaya.Pertemuan ini fokus pada:Principled BSDFParameter:Base Color
+Roughness
+Metallic
+Normal
+Emission36. Principled BSDFNode utama:Principled BSDF
+↓
+Material OutputPrincipled BSDF menggabungkan parameter material dalam workflow PBR yangpraktis.Sebelum memasang texture map, ubah parameter secara manual untukmemahami efeknya.37. Eksperimen Base ColorPada Principled BSDF:Base Colorubah ke beberapa warna.Amati:Base Color mengubah warna dasar surface, tetapi belum memberikanvariasi detail spasial seperti image texture.38. Eksperimen RoughnessCoba:Roughness = 0.1
+Roughness = 0.5
+Roughness = 0.9Secara konsep:rendah
+→ lebih halus / highlight lebih tajam
+
+tinggi
+→ lebih kasar / highlight lebih menyebarHasil visual juga bergantung pada lighting/environment.39. Eksperimen MetallicCoba:Metallic = 0
+Metallic = 1Contoh:Plastic / Wood / Stone
+→ non-metal
+
+Steel / Aluminum / Copper
+→ metalMaterial metal memerlukan lingkungan/lighting yang memadai agar karakterrefleksinya terlihat.40. Image Texture NodeUntuk menggunakan image:Shader Editor
+Shift + A
+→ Texture
+→ Image TextureKlik:Openkemudian pilih file texture.41. Struktur Folder TextureGunakan struktur yang rapi:P10_NRP_Nama/
+├── P10_NRP_Nama.blend
+└── textures/
+    ├── asset_basecolor.png
+    ├── asset_roughness.png
+    ├── asset_metallic.png
+    ├── asset_normal.png
+    └── asset_emission.pngNama file dapat berbeda, tetapi harus mudah dipahami.42. Base Color MapTambahkan Image Texture:asset_basecolor.pngHubungkan:Image Texture — Color
+↓
+Principled BSDF — Base ColorColor Space:sRGBkarena Base Color merupakan data warna visual.43. Base Color dan UVImage Texture membaca koordinat surface melalui UV.Secara konseptual:3D Face
+↓
+UV Coordinate
+↓
+Image Pixel
+↓
+Base ColorJika texture tampak salah posisi, masalah dapat berasal dari UV, bukandari image.44. Roughness MapTambahkan:asset_roughness.pngHubungkan:Image Texture — Color
+↓
+Principled BSDF — RoughnessSet:Color Space = Non-ColorKarena Roughness Map adalah data, bukan warna untuk dilihat sebagaigambar artistik.45. Membaca Roughness MapSecara umum pada workflow yang digunakan dalam materi:gelap
+→ lebih halus
+
+terang
+→ lebih kasarPeriksa material dengan lighting yang cukup agar perbedaannya terlihat.46. Metallic MapTambahkan:asset_metallic.pngHubungkan:Image Texture — Color
+↓
+Principled BSDF — MetallicSet:Color Space = Non-Color47. Membaca Metallic MapSecara umum:hitam
+→ non-metal
+
+putih
+→ metalMetallic Map berguna jika satu material mempunyai area metal dannon-metal.Contoh:painted body
++
+exposed metal48. Normal MapNormal Map memberi ilusi detail permukaan tanpa menambah silhouettegeometry.Contoh detail:scratch;small panel;emboss;surface bumps.Normal Map memengaruhi shading, bukan bentuk luar object.49. Normal Map NodeJangan menghubungkan Normal Map image langsung ke input NormalPrincipled BSDF.Workflow:Image Texture
+↓
+Normal Map
+↓
+Principled BSDF — NormalTambahkan:Shift + A
+→ Vector
+→ Normal Map50. Color Space Normal MapPada Image Texture untuk normal:Color Space = Non-ColorKemudian:Image Texture — Color
+↓
+Normal Map — Color
+↓
+Normal Map — Normal
+↓
+Principled BSDF — Normal51. Normal StrengthNode Normal Map memiliki:StrengthCoba:0
+0.5
+1.0
+2.0Amati perubahan.Nilai terlalu tinggi dapat membuat shading terlihat berlebihan/tidaknatural.52. EmissionEmission membuat surface tampak memancarkan cahaya sendiri.Contoh:LED;screen;robot eye;neon strip;sci-fi indicator.Pada asset hard-surface, pilih area kecil agar emission menjadi aksen.53. Emission pada Principled BSDFGunakan input emission pada Principled BSDF yang tersedia pada versiBlender yang digunakan.Atur:Emission Color
+Emission StrengthNama/penempatan field dapat sedikit berbeda antarversi Blender, tetapikonsepnya sama:color
++
+strength54. Emission MapJika memiliki:asset_emission.pnggunakan untuk menentukan bagian yang emissive.Secara konseptual:Emission Map
+↓
+Emission InputArea gelap dapat digunakan sebagai area non-emissive, sedangkan areayang berisi informasi emission mengaktifkan bagian tertentu sesuaitexture yang dibuat.55. PBR Node Flow LengkapStruktur material:Base Color Image
+(sRGB)
+      ↓
+Base Color
+
+Roughness Image
+(Non-Color)
+      ↓
+Roughness
+
+Metallic Image
+(Non-Color)
+      ↓
+Metallic
+
+Normal Image
+(Non-Color)
+      ↓
+Normal Map Node
+      ↓
+Normal
+
+Emission Image
+      ↓
+Emission
+
+        ↓
+Principled BSDF
+        ↓
+Material Output56. Color Space --- Konsep PentingGunakan:Base Color
+→ sRGB
+
+Roughness
+→ Non-Color
+
+Metallic
+→ Non-Color
+
+Normal
+→ Non-ColorMengapa?Base Color merepresentasikan warna visual.Roughness, Metallic, dan Normal menyimpan nilai data yang digunakanuntuk perhitungan shading.57. Jika Texture Map Tidak TersediaUntuk praktikum, texture map dapat berasal dari:asset texture yang disediakan dosen;texture PBR legal/free yang sudah disiapkan;texture sederhana yang dibuat mahasiswa;grayscale map sederhana untuk roughness/metallic/emission.Jika map tertentu tidak tersedia, mahasiswa tetap wajib memahami koneksinode dan dapat membuat map sederhana sendiri untuk menunjukkan konsep.58. Membuat Roughness Map SederhanaMahasiswa dapat membuat image grayscale sederhana di aplikasi imageeditor.Contoh:Left half  = dark gray
+Right half = light graySetelah dipasang ke Roughness, surface menunjukkan dua karakterkekasaran berbeda.Tujuan:membuktikan bahwa map mengontrol parameter per area.59. Membuat Metallic Map SederhanaBuat image:area hitam
++
+area putihHubungkan ke Metallic.Target:satu bagian non-metal
++
+satu bagian metal60. Membuat Emission Map SederhanaBuat mask sederhana untuk:LED;strip;panel;icon.Gunakan area kecil pada UV agar emission memiliki lokasi yang jelas.61. Texture Painting Bukan Fokus UtamaPertemuan ini berfokus pada:UV
++
+Texture Maps
++
+PBR MaterialBukan pada workflow texture painting kompleks.Mahasiswa boleh membuat texture sendiri, tetapi tujuan utamanya adalahmemahami bagaimana map dihubungkan ke material.62. Milestone 1 --- Model PreparationSelesaikan:file P10 dibuat;scale diperiksa;Apply Scale bila diperlukan;normal diperiksa;topology layak;object naming rapi.63. Milestone 2 --- Mark SeamAsset utama harus mempunyai seam yang:dapat dijelaskan alasannya;mengikuti struktur object;menghindari area visual utama bila memungkinkan.Ambil screenshot seam.64. Milestone 3 --- UnwrapLakukan:A
+U
+→ UnwrapPastikan UV Island muncul di UV Editor.Ambil screenshot awal UV layout.65. Milestone 4 --- Checker TestPasang checker.Periksa seluruh asset.Target:checker tidak stretched secara ekstrem
++
+ukuran relatif konsistenJika bermasalah, kembali ke seam.66. Milestone 5 --- UV Island AdjustmentAtur:Move
+Rotate
+Scale
+Pack
+MarginTarget:UV space digunakan dengan baik;island tidak overlap tanpa alasan;margin tersedia;texel density relatif konsisten.67. Milestone 6 --- Base ColorPasang:Base Color Map
+→ Base ColorPastikan:sRGBPeriksa orientasi texture pada asset.68. Milestone 7 --- Roughness + MetallicPasang kedua map.Pastikan:Non-ColorBandingkan hasil sebelum dan sesudah map.69. Milestone 8 --- Normal MapPasang:Image Texture
+↓
+Normal Map Node
+↓
+Principled BSDF NormalPastikan texture:Non-ColorPeriksa Strength.70. Milestone 9 --- EmissionTambahkan satu area emission yang relevan.Contoh:LED;screen;indicator;glowing strip.Gunakan warna dan strength secukupnya.71. Milestone 10 --- Final Material ReviewPeriksa:UV
+Base Color
+Roughness
+Metallic
+Normal
+EmissionPastikan semua koneksi node dapat dijelaskan.72. Eksperimen Wajib 1 --- Seam StrategyPada object latihan atau backup, buat dua strategi seam berbeda.Lakukan Unwrap pada keduanya.Bandingkan:jumlah island;distortion;keterbacaan layout.Jawab:strategi mana yang lebih baik dan mengapa?73. Eksperimen Wajib 2 --- Manual vs Smart UVBandingkan:Manual Unwrapdengan:Smart UV ProjectCatat:jumlah island;kontrol;distortion;waktu pengerjaan;kemudahan packing.74. Eksperimen Wajib 3 --- Checker DistortionTemukan satu UV island.Scale hanya pada satu axis di UV Editor hingga checker terlihatstretched.Kemudian kembalikan ke kondisi baik.Tujuan:memahami hubungan bentuk UV dengan texture pada surface.75. Eksperimen Wajib 4 --- Texel DensityBuat dua island dengan ukuran sangat berbeda di UV space.Amati ukuran checker.Kemudian atur kembali agar detail relatif konsisten.Jelaskan hasilnya.76. Eksperimen Wajib 5 --- UV MarginPack island dengan margin yang layak.Bandingkan secara konseptual dengan layout yang island-nya terlalurapat.Jelaskan risiko texture bleeding.77. Eksperimen Wajib 6 --- Base Color Solid vs MapBandingkan:solid Base Colordengan:Base Color MapJelaskan kelebihan texture map untuk variasi surface.78. Eksperimen Wajib 7 --- RoughnessBandingkan:Roughness = 0.1
+Roughness = 0.9kemudian pasang Roughness Map.Jelaskan perbedaan:single value
+vs
+per-pixel/per-area control79. Eksperimen Wajib 8 --- MetallicBandingkan:Metallic = 0
+Metallic = 1kemudian gunakan Metallic Map dengan area hitam dan putih.Amati bagaimana satu material dapat memiliki karakter berbeda per area.80. Eksperimen Wajib 9 --- Color SpacePada Roughness Map, bandingkan sementara:sRGBdengan:Non-ColorKemudian kembalikan ke:Non-ColorJelaskan mengapa map data seharusnya tidak diperlakukan sebagai warnavisual.81. Eksperimen Wajib 10 --- Normal MapBandingkan:Normal Map OFFdan:Normal Map ONAmati detail shading.Periksa silhouette:apakah silhouette berubah?Jawaban konseptual harus menghubungkan Normal Map dengan shading, bukangeometry nyata.82. Eksperimen Wajib 11 --- Normal StrengthBandingkan beberapa nilai Strength.Pilih nilai yang terlihat masuk akal untuk asset.Jelaskan mengapa nilai paling tinggi tidak selalu paling baik.83. Eksperimen Wajib 12 --- EmissionBandingkan:Emission Strength rendahdan:Emission Strength lebih tinggiPeriksa apakah emission masih menjadi aksen atau justru mendominasimaterial.84. Tugas UtamaGunakan asset Pertemuan 9 dan buat:UV-Mapped PBR AssetRequirement: asset hasil modeling P9; model preparation; Apply Scale bila diperlukan; normal diperiksa; seam manual; unwrap; UV Island yang dapat dijelaskan; checker test; distortion diperiksa; texel density diperiksa; UV packing; margin antar-island; tidak ada accidental overlap; material menggunakan Principled BSDF; Base Color; Roughness; Metallic; Normal Map; Emission; Base Color menggunakan sRGB; Roughness menggunakan Non-Color; Metallic menggunakan Non-Color; Normal menggunakan Non-Color; minimal dua challenge; node graph rapi; final asset dapat diperiksa pada Material Preview/Rendered View; file siap digunakan pada Pertemuan 11.85. Challenge A --- Multi-Material SurfaceGunakan dua material pada satu asset.Contoh:Body
+→ painted metal
+
+Handle
+→ rubber/plasticTujuan:memahami bahwa satu asset dapat memiliki beberapa karakter surface.86. Challenge B --- Intentional UV OverlapGunakan overlap hanya pada dua bagian identik yang memang inginmenggunakan area texture sama.Dokumentasikan:bagian yang overlap;alasan;keuntungan;keterbatasan.87. Challenge C --- Hero Texel DensityPilih satu area penting:front panel / display / logo areaberikan UV area lebih besar secara sengaja.Jelaskan mengapa area tersebut membutuhkan detail lebih tinggi.88. Challenge D --- Custom Emission MaskBuat emission mask sendiri untuk:LED;display;warning strip;robot eye.Pastikan hanya area yang direncanakan yang emissive.89. Challenge E --- Custom Roughness VariationBuat Roughness Map sederhana yang memberikan:clean painted area
++
+rough/worn areaTanpa mengubah geometry.90. Challenge F --- Metal + Painted SurfaceBuat satu material yang mempunyai:painted non-metal area
++
+exposed metallic areaGunakan Metallic Map untuk membedakannya.91. Challenge G --- UV OptimizationRapikan UV layout dengan target:ruang kosong minimum yang wajar;margin tetap aman;orientasi island mudah dibaca;texel density konsisten.Dokumentasikan before/after.92. Challenge H --- Normal DetailGunakan Normal Map untuk menambahkan detail kecil yang tidak perludibuat sebagai geometry.Contoh:fine scratches;small grooves;embossed detail.Jelaskan mengapa detail tersebut lebih efisien sebagai Normal Mapdaripada geometry.93. Debugging --- Texture Tidak MunculPeriksa:material sudah assigned?;Image Texture sudah dibuka?;node sudah terhubung?;object mempunyai UV?;viewport berada pada Material Preview/Rendered?;file texture masih tersedia?;UV berada pada area yang benar?94. Debugging --- Texture StretchedPeriksa:seam;unwrap;bentuk UV Island;checker;scale island;geometry.Solusi utama bukan mengganti texture, tetapi memperbaiki UV.95. Debugging --- Checker Berbeda UkuranIni menunjukkan texel density berbeda.Periksa scale UV Island.Jika tidak disengaja, sesuaikan scale island agar checker relatifkonsisten.96. Debugging --- Terlalu Banyak UV IslandPenyebab:seam terlalu banyak;Smart UV menghasilkan banyak potongan;topology kompleks.Evaluasi apakah beberapa island seharusnya tetap terhubung.97. Debugging --- UV Island OverlapJika overlap tidak disengaja:pilih island;pindahkan;scale;Pack Islands ulang.Jika overlap disengaja, dokumentasikan alasannya.98. Debugging --- Roughness Terlihat SalahPeriksa:Color Space = Non-Colordan koneksi:Image Texture
+→ RoughnessPastikan image memang Roughness Map, bukan map dengan konvensi berbedayang belum disesuaikan.99. Debugging --- Metallic Tidak Terlihat JelasPeriksa:Metallic Map;Non-Color;lighting/environment;Roughness;apakah area map memang putih/metal.Material metal sangat bergantung pada apa yang direfleksikan.100. Debugging --- Normal Map Tampak SalahPeriksa:Image Texture = Non-Colordan harus melalui:Normal Map Nodebukan langsung ke input Normal.Periksa juga Strength.101. Debugging --- Emission Tidak TerlihatPeriksa:input emission;warna;strength;emission map/mask;area UV;mode viewport/render.Emission membuat surface emissive; tampilan efek cahaya di sekitarnyajuga bergantung pada konfigurasi render/scene yang akan diperdalam padapertemuan berikutnya.102. Debugging --- Texture Hilang Saat File DipindahTexture image adalah file eksternal kecuali dipack ke .blend.Untuk pengumpulan, simpan texture dalam folder project yang jelas.Jangan hanya mengandalkan lokasi acak pada komputer.103. Pack Resources --- Opsional tetapi DisarankanUntuk mengurangi risiko missing texture, Blender menyediakan mekanismeuntuk memasukkan resource eksternal ke file .blend.Jika digunakan, tetap simpan folder texture asli sebagai dokumentasi.Tujuan utama:file dapat dibuka kembali tanpa kehilangan asset penting.104. Test CaseNo. Pengujian           Hasil yang Diharapkan  1 Model preparation   Geometry siap UV
+  2 Apply Scale         Scale layak/konsisten
+  3 Seam                Edge potong terencana
+  4 Unwrap              UV Islands terbentuk
+  5 Checker             Distortion dapat dievaluasi
+  6 Texel density       Detail relatif konsisten
+  7 UV packing          Area UV digunakan efisien
+  8 Margin              Islands tidak terlalu rapat
+  9 Overlap             Tidak ada overlap tak disengaja
+ 10 Principled BSDF     Material aktif
+ 11 Base Color          Warna/map tampil
+ 12 Roughness           Kekasaran berubah
+ 13 Metallic            Area metal/non-metal bekerja
+ 14 Normal              Detail shading terlihat
+ 15 Emission            Area emissive bekerja
+ 16 Color space         Map warna/data tepat
+ 17 Node graph          Koneksi dapat dibaca
+ 18 Texture path        File tidak missing
+ 19 Final review        Asset tampak konsisten
+ 20 Reopen file         Material tetap berfungsi105. Pertanyaan PemahamanApa fungsi material?Apa fungsi Principled BSDF?Apa itu texture?Mengapa texture bukan hanya Base Color?Apa itu UV Mapping?Mengapa menggunakan U dan V?Apa itu UV space?Apa hubungan face 3D dengan UV face?Apa itu seam?Mengapa seam diperlukan?Di mana seam sebaiknya ditempatkan?Apa itu unwrap?Apa itu UV Island?Apa yang menentukan jumlah UV Island?Apa itu UV distortion?Bagaimana checker membantu mendeteksi distortion?Apa itu texel density?Mengapa texel density perlu konsisten?Kapan texel density boleh lebih tinggi?Apa fungsi Pack Islands?Mengapa UV Island memerlukan margin?Apa risiko margin terlalu kecil?Apa itu overlapping UV?Kapan UV overlap boleh digunakan?Apa perbedaan Manual Unwrap dan Smart UV Project?Apa fungsi Image Texture node?Apa fungsi Base Color?Apa fungsi Base Color Map?Apa fungsi Roughness?Apa arti Roughness mendekati 0?Apa arti Roughness mendekati 1?Apa fungsi Roughness Map?Apa fungsi Metallic?Apa arti Metallic 0?Apa arti Metallic 1?Apa fungsi Metallic Map?Apa itu PBR?Apa fungsi Normal pada shading?Apa fungsi Normal Map?Mengapa Normal Map tidak mengubah silhouette?Mengapa Normal Map harus melalui Normal Map node?Apa fungsi Strength pada Normal Map node?Apa itu color space?Mengapa Base Color menggunakan sRGB?Mengapa Roughness menggunakan Non-Color?Mengapa Metallic menggunakan Non-Color?Mengapa Normal Map menggunakan Non-Color?Apa fungsi Emission?Apa fungsi Emission Map?Bagaimana UV, texture map, dan Principled BSDF membentuk PBRsurface?106. Pertanyaan AnalisisA --- SeamSebuah cylinder hanya di-unwrap tanpa seam vertikal yang sesuai.Masalah apa yang mungkin muncul dan mengapa?B --- CheckerChecker pada bagian depan terlihat kotak, tetapi pada bagian sampingterlihat memanjang.Apa yang dapat disimpulkan?C --- Texel DensityFront panel mendapat UV area dua kali lebih besar daripada bagianbelakang.Kapan keputusan ini masuk akal?D --- RoughnessMengapa satu nilai Roughness tidak cukup jika object mempunyai area cathalus dan area kotor/kasar?E --- MetallicMengapa kayu seharusnya tidak diperlakukan seperti metal hanya agarterlihat lebih reflektif?F --- Normal MapMengapa scratch kecil sering lebih tepat dibuat dengan Normal Mapdaripada menambah geometry?G --- Color SpaceApa masalah konseptual jika Roughness Map diperlakukan sebagai warnavisual?H --- PipelineMengapa asset dengan UV dan PBR material yang baik masih memerlukanlighting yang baik pada Pertemuan 11?107. Dokumentasi WajibAmbil screenshot:1. Asset sebelum UV
+2. Marked Seam
+3. Initial UV Unwrap
+4. Checker Test
+5. Final UV Layout
+6. Principled BSDF Node Graph
+7. Base Color + Roughness + Metallic
+8. Normal Map
+9. Emission
+10. Final MaterialScreenshot harus cukup jelas untuk menunjukkan proses, bukan hanya hasilakhir.108. Struktur PengumpulanP10_NRP_Nama/
+├── P10_NRP_Nama.blend
+├── textures/
+│   ├── ...
+├── screenshots/
+│   ├── 01_model.png
+│   ├── 02_seam.png
+│   ├── 03_uv.png
+│   ├── 04_checker.png
+│   ├── 05_nodes.png
+│   └── 06_final.png
+└── README.md109. Isi READMETuliskan:Nama
+NRP
+Nama Asset
+Deskripsi Asset
+Strategi Seam
+Jumlah/jenis UV Island utama
+Masalah UV yang ditemukan
+Cara memperbaiki distortion
+Strategi Texel Density
+Texture Maps yang Digunakan
+Color Space Setiap Map
+Bagian Metal
+Bagian Non-Metal
+Bagian Emission
+Normal Detail
+Challenge yang Dikerjakan
+Kendala
+Solusi110. Checklist Pengumpulan file .blend tersedia; texture tidak missing; model berasal dari P9 atau setara; scale diperiksa; normal diperiksa; seam manual tersedia; unwrap dilakukan; UV Island dapat dijelaskan; checker test dilakukan; distortion diperiksa; texel density diperiksa; UV packing rapi; margin tersedia; overlap hanya jika disengaja; Principled BSDF digunakan; Base Color digunakan; Roughness digunakan; Metallic digunakan; Normal Map digunakan; Emission digunakan; color space tepat; node graph rapi; minimal dua challenge; screenshot proses lengkap; README lengkap; final asset siap Pertemuan 11.111. Refleksi PraktikumTuliskan 5--8 kalimat mengenai:bagian tersulit saat menentukan seam;manfaat checker texture;masalah distortion yang ditemukan;bagaimana texel density diperbaiki;perbedaan Base Color dan Roughness Map;pengaruh Metallic;fungsi Normal Map;penggunaan Emission.112. Hubungan dengan Pertemuan 11Hasil praktikum:Modeled Asset
++
+UV
++
+PBR Material
++
+Texture Mapsakan menjadi input:Lighting
++
+Camera
++
+RenderingMaterial tidak dapat dinilai secara terpisah dari cahaya.Pada Pertemuan 11 mahasiswa akan mempelajari bagaimana pencahayaan dankamera menampilkan karakter PBR surface secara lebih lengkap.113. Ringkasan PraktikumPipeline:3D Model
+↓
+Apply Scale
+↓
+Mark Seam
+↓
+Unwrap
+↓
+UV Islands
+↓
+Checker
+↓
+Distortion Review
+↓
+Texel Density
+↓
+Pack + Margin
+↓
+Principled BSDF
+↓
+Base Color
++
+Roughness
++
+Metallic
++
+Normal
++
+Emission
+↓
+PBR SurfaceKonsep penting:Seam
+→ menentukan cara mesh dibuka
+
+UV Island
+→ representasi kelompok face di 2D
+
+Checker
+→ alat evaluasi UV
+
+Texel Density
+→ konsistensi detail texture
+
+Base Color
+→ warna utama
+
+Roughness
+→ karakter kasar/halus
+
+Metallic
+→ metal/non-metal
+
+Normal Map
+→ detail shading tanpa menambah silhouette
+
+Emission
+→ surface emissiveTarget akhir:UV-Mapped PBR Assetyang siap masuk ke tahap:Blender Li
+
